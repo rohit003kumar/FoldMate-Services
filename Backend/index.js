@@ -147,17 +147,41 @@ app.use(compression());
 //   allowedHeaders: ['Content-Type', 'Authorization']
 // }));
 
+// const allowedOrigins = [
+//   "http://localhost:5173", // dev
+//   "https://dhobiexpress-online.onrender.com" // deployed frontend
+// ];
+
+// app.use(
+//   cors({
+//     origin: allowedOrigins,
+//     credentials: true,
+//   })
+// );
 const allowedOrigins = [
-  "http://localhost:5173", // dev
-  "https://dhobiexpress-online.onrender.com" // deployed frontend
+  "http://localhost:5173",
+  "https://fold-mate-services.vercel.app",
+  "https://dhobiexpress-online.onrender.com"
 ];
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (Postman, mobile apps, server-to-server)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
+
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
